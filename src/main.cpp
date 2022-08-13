@@ -6,8 +6,15 @@ ADS1115 ADS0(0x48);      //addr -> vcc
 ADS1115 ADS1(0x49);      //addr -> gnd
 
 /* User-Klassen für jeden Messkanal initalisieren */
-classCell cell01(0, &ADS0);classCell cell02(1, &ADS0);classCell cell03(2, &ADS0);classCell cell04(3, &ADS0);
-classCell cell05(4, &ADS1);classCell cell06(5, &ADS1);classCell cell07(6, &ADS1);classCell cell08(7, &ADS1);
+classCell cell01(0, 1, &ADS0);
+classCell cell02(1, 2, &ADS0);
+classCell cell03(2, 3, &ADS0);
+classCell cell04(3, 4, &ADS0);
+
+classCell cell05(0, 5, &ADS1);
+classCell cell06(1, 6, &ADS1);
+classCell cell07(2, 7, &ADS1);
+classCell cell08(3, 8, &ADS1);
 
 /* Array für Messkanal-Klassen damit durchiteriert werden kann */
 classCell *Battery[BATTERY_CELLCNT];  
@@ -34,6 +41,7 @@ void loop()
      {
      Battery[i]->PrettyPrintResults();
      }
+     Serial.println();
 
-    delay(300);
+    delay(1000);
 }

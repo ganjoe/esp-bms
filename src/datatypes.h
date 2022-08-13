@@ -5,6 +5,10 @@
 #include "utils.h"
 
 #define BATTERY_CELLCNT 8
+#define ADS_GAIN 4
+#define ADS_SPEED 7
+
+
 
 class classCell
 {
@@ -14,11 +18,12 @@ private:
     int datarate;
     ADS1115 *ADC;
     int channel;
+    int cellnumber;
 
 public:
-    classCell(int channel, ADS1115 *ADC);
-    classCell(int channel, ADS1115 *ADC, double faktor);
-    classCell(int channel, ADS1115 *ADC, double faktor, int gain, int datarate);
+    classCell(int channel, int cellnumber, ADS1115 *ADC);
+    classCell(int channel, int cellnumber,ADS1115 *ADC, double faktor);
+    classCell(int channel, int cellnumber,ADS1115 *ADC, double faktor, int gain, int datarate);
     double PrettyPrintResults();
     void publishToTopic();
 };
