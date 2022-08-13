@@ -3,11 +3,6 @@
 
 
 
-void initBattery()
-{
-
-}
-
 classCell::classCell(int channel, ADS1115 *ADC)
     {
     this->faktor = 1;    
@@ -49,7 +44,9 @@ void classCell::publishToTopic()
 double classCell::PrettyPrintResults()
     {
     int result = ADC->readADC(channel);
-    double fresult = (double)result * faktor;
+    double fresult = ADC->toVoltage(channel);
+    fresult*=faktor;
     Serial.printf("cell0%d: %f\n",channel, fresult);
+    
     return fresult;
     }
