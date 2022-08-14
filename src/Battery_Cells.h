@@ -18,14 +18,31 @@ private:
     int datarate;
     ADS1115 *ADC;
     int channel;
+    double  fResult;
+    int iResult;
     int cellnumber;
+    bool StateCharge;
+    bool StateDischarge;
 
 public:
+
     classCell(int channel, int cellnumber, ADS1115 *ADC);
-    classCell(int channel, int cellnumber,ADS1115 *ADC, double faktor);
-    classCell(int channel, int cellnumber,ADS1115 *ADC, double faktor, int gain, int datarate);
-    double PrettyPrintResults();
-    void publishToTopic();
+    
+    double getfResults();
+    
 };
+
+class classBattery
+{
+private:
+        
+public:
+
+    classCell *cell[BATTERY_CELLCNT];
+    void publishToTopic();  
+    void receiveFromTopic();
+};
+
+void Battery_callback(char* topic, byte* payload, unsigned int length);
 
 #endif

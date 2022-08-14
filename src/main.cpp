@@ -26,17 +26,6 @@ classCell cell08(3, 8, &ADS1);
 
 classBattery Batt;
 
-void publish() 
-  {
-
-/*     doc["cell01"] = 13.13;
-
-    
-  size_t bytes = serializeJson(doc, jbuffer);
-  client.connect("Battery"); 
-  client.publish("warpkern_spannung", jbuffer, bytes); */
-  
-  }
 
 void setup() 
 {
@@ -44,6 +33,10 @@ WiFi.mode(WIFI_STA);
 WiFi.begin("Level5", "Hallogaga#1");
 while (WiFi.status() != WL_CONNECTED)   {    delay(500);   }
 client.setServer("10.20.0.34", 1883);
+client.connect("Battery");
+client.setCallback(Battery_callback);
+client.subscribe("warpkern_last");
+
 Serial.begin(115200); 
 
 scan_i2c();  
@@ -64,17 +57,21 @@ ADS0.begin();
 ADS1.begin();
 
 Serial.print("setup done");
+
 }
 
 void loop() 
 {
 
-     Serial.println(Batt.cell[0]->cellnumber);
-     //publish();
+ 
+  
      Batt.publishToTopic();
+     delay(300);
+  
      client.loop();
    
     
 
-    delay(300);
+    
 }
+
