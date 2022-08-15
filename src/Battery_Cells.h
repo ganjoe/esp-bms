@@ -8,7 +8,35 @@
 #define ADS_GAIN 4
 #define ADS_SPEED 7
 
+enum TOPICS
+    {
+    WARPKERN,   //empfangen der buttonstati
+    TANKS,
+    
+    };
 
+
+enum WARPKERN
+    {
+    LASTFREIGABE_AUS,   
+    LASTFREIGABE_EIN,
+    QUELLFREIGABE_AUS,
+    QUELLFREIGABE_EIN, 
+    HEISZAUTOMATIK_EIN,
+    HEIZAUTOMATIK_AUS
+    };
+
+enum TANKS
+    {
+    ABPUMPEN_AUS,
+    ABPUMPEN_EIN,
+    ANSAUGEN_AUS,
+    ANSAUGEN_EIN,
+    HEIZAUTOMATIK_FRISCHWASSER_AUS,
+    HEIZAUTOMATIK_FRISCHWASSER_EIN,
+    HEIZAUTOMATIK_ABWASSER_AUS,
+    HEIZAUTOMATIK_ABWASSER_EIN,
+    };
 
 class classCell
 {
@@ -21,11 +49,11 @@ private:
     double  fResult;
     int iResult;
     int cellnumber;
-    bool StateCharge;
-    bool StateDischarge;
+
 
 public:
 
+   
     classCell(int channel, int cellnumber, ADS1115 *ADC);
     
     double getfResults();
@@ -37,12 +65,14 @@ class classBattery
 private:
         
 public:
+    bool StateCharge;
+    bool StateDischarge;
+    bool StateHeater;
 
     classCell *cell[BATTERY_CELLCNT];
-    void publishToTopic();  
-    void receiveFromTopic();
+
 };
 
-void Battery_callback(char* topic, byte* payload, unsigned int length);
+
 
 #endif

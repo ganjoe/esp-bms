@@ -5,11 +5,18 @@
 #include "Battery_Cells.h"
 #include "com.h"
 #include "credentials.h"
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 /* Treiber-Klassen für beide ADS1115 initalisieren */
 ADS1115 ADS0(0x48);      //addr -> vcc
 ADS1115 ADS1(0x49);      //addr -> gnd
 
+/* Treiber - Klasse für One-Wire Temperatursensor */
+// Pinlabel für ESP ! für leitungen ab 40cm pullup verwenden
+const int oneWireBus = D4;          
+OneWire oneWire(oneWireBus);
+DallasTemperature sensors(&oneWire);
 
 
 /* User-Klassen für jeden Messkanal initalisieren */
@@ -72,8 +79,10 @@ void reconnect() {
   }
 }
 
+/* callback wird aufgerufen nachdem irgentwas vom mqtt empfangen wurde */
 void callback(char* topic, byte* payload, unsigned int length) 
      {
+      /*-------------debug-----------------------*/
      char msgarray[length+1];
      float fvalue = 0;
      Serial.print("Message arrived [");
@@ -91,9 +100,9 @@ void callback(char* topic, byte* payload, unsigned int length)
      
      fvalue = atof(msgarray);
      
-     //Serial.print("float ");Serial.println(fvalue);
-
+/*---------------/debug------------------*/
  
+
      switch ((int)fvalue)
      {
       case LASTFREIGABE_AUS: Batt.StateDischarge = false; break;
@@ -117,11 +126,11 @@ void callback(char* topic, byte* payload, unsigned int length)
 void setup() 
      {
      Serial.begin(115200); 
+     sensors.begin(); // one wire tempsensor
      setup_wifi();
      client.setServer("10.20.0.34", 1883);
      client.setCallback(callback);
      scan_i2c();  
-
 
      /* Batterie-Klasse mit cell-objekt-referenzen füllen */
 
@@ -154,11 +163,16 @@ void loop()
   }
   client.loop();
 
+  /* timer fürs senden */
   unsigned long now = millis();
   if (now - lastMsg > 300) 
   {
   lastMsg = now;
 
+   sensors.requestTemperatures(); 
+ 
+
+  /* topic warpkern senden */
     doc["cell01"] = Batt.cell[0]->getfResults();
     doc["cell02"] = Batt.cell[1]->getfResults();
     doc["cell03"] = Batt.cell[2]->getfResults();
@@ -166,12 +180,10 @@ void loop()
     doc["cell05"] = Batt.cell[4]->getfResults();
     doc["cell06"] = Batt.cell[5]->getfResults();
     doc["cell07"] = Batt.cell[6]->getfResults();
-    doc["cell08"] = Batt.cell[7]->getfResults();
-
-    
-  size_t bytes = serializeJson(doc, jbuffer);
-
-  client.publish("warpkern_spannung", jbuffer, bytes);
+    doc["cell08"] = Batt.cell[7]->getfResults(); 
+    doc["tempboden"] = sensors.getTempCByIndex(0);
+    size_t bytes = serializeJson(doc, jbuffer);
+    client.publish("warpkern_spannung", jbuffer, bytes);
   
  
   }
