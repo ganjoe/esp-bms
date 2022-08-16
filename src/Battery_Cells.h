@@ -3,6 +3,7 @@
 #include "ADS1X15.h"
 #include "PubSubClient.h"
 #include "utils.h"
+#include "Battery_heater.h"
 
 #define BATTERY_CELLCNT 8
 #define ADS_GAIN 4
@@ -73,8 +74,10 @@ public:
     bool StateESP;
 
     classCell *cell[BATTERY_CELLCNT];
+    Battery_heater *Heater;
 
 };
+
 
 
 

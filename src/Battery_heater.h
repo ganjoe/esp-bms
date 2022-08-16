@@ -6,9 +6,17 @@
 class Battery_heater
 {
 private:
-    /* data */
+    float minTemp, maxTemp;
+    uint8_t Relais;
+    int switchcounter;
+    void getTemperature();
+    void setRelais(bool state);
+    
 public:
-    Battery_heater(/* args */);
+    float Temp;
+    Battery_heater(uint8_t Relais, float minTemp, float maxTemp);
+    void setSwitchcounter(int counts);
+    void update();
 
 };
 

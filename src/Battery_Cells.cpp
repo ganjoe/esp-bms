@@ -27,3 +27,4 @@ double classCell::getfResults()
     fResult*=faktor;
     return fResult;
     }
+

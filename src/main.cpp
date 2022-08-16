@@ -39,6 +39,9 @@ classCell cell07(2, 7, &ADS1);
 classCell cell08(3, 8, &ADS1);
 
 classBattery Batt;
+Battery_heater heater(HEATER, 40.0, 45.0);
+
+
 
 void setup_wifi() 
      {
@@ -150,7 +153,7 @@ void setup()
      pinMode(DISCONNECT,INPUT_PULLUP);
 
 
-     /* Batterie-Klasse mit cell-objekt-referenzen füllen */
+     /* Batterie-Klasse  cell-objekt-referenzen zuweisen */
 
      Batt.cell[0] = &cell01;
      Batt.cell[1] = &cell02;
@@ -160,6 +163,9 @@ void setup()
      Batt.cell[5] = &cell06;
      Batt.cell[6] = &cell07;
      Batt.cell[7] = &cell08;
+
+/* Batterie-Klasse heater-referenz zuweisen */
+     Batt.Heater = &heater;
 
      ADS0.begin();
      ADS1.begin();
@@ -178,11 +184,6 @@ void loop()
   if (!client.connected())   {    reconnect();  }
   client.loop();
 
-  /* timer fürs senden */
-  unsigned long now = millis();
-  if (now - lastMsg > 1) 
-    {
-    lastMsg = now;
     sensors.requestTemperatures(); 
 
     /* topic warpkern senden */
@@ -197,7 +198,7 @@ void loop()
     doc["tempboden"] = sensors.getTempCByIndex(0);
     size_t bytes = serializeJson(doc, jbuffer);
     client.publish("warpkern_daten", jbuffer, bytes);
-    }
+
 
     /* GPIOS setzen */
      digitalWrite(BATTPROTECT_LOAD, Batt.StateDischarge);
