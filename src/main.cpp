@@ -18,6 +18,14 @@ const int oneWireBus = D4;
 OneWire oneWire(oneWireBus);
 DallasTemperature sensors(&oneWire);
 
+/* Ausgänge für Relais */
+
+#define SELBSTHALTUNG D5
+#define HEATER D8
+#define BATTPROTECT_LOAD D6   //BP0
+#define BATTPROTECT_CHARGE D7
+#define DISCONNECT D3
+
 
 /* User-Klassen für jeden Messkanal initalisieren */
 classCell cell01(0, 1, &ADS0);
@@ -111,12 +119,15 @@ void callback(char* topic, byte* payload, unsigned int length)
       case QUELLFREIGABE_EIN: Batt.StateDischarge = true; break;
       case HEISZAUTOMATIK_EIN: Batt.StateHeater = true; break;
       case HEIZAUTOMATIK_AUS: Batt.StateHeater = false; break;
+      case SELBSTHALTUNG_EIN: Batt.StateESP = true; break;
+      case SELBSTHALTUNG_AUS: Batt.StateESP = false; break;
     
      default:
           {
            Batt.StateDischarge = false;
            Batt.StateCharge = false;  
-           Batt.StateHeater = false;  
+           Batt.StateHeater = false; 
+           Batt.StateESP = false; 
           }
           break;
      }
@@ -131,6 +142,13 @@ void setup()
      client.setServer("10.20.0.34", 1883);
      client.setCallback(callback);
      scan_i2c();  
+
+     pinMode(BATTPROTECT_LOAD, OUTPUT);
+     pinMode(BATTPROTECT_CHARGE, OUTPUT);
+     pinMode(HEATER, OUTPUT);
+     pinMode(SELBSTHALTUNG, OUTPUT);
+     pinMode(DISCONNECT,INPUT_PULLUP);
+
 
      /* Batterie-Klasse mit cell-objekt-referenzen füllen */
 
@@ -154,25 +172,20 @@ unsigned long lastMsg = 0;
 
 void loop() 
 {
-     StaticJsonDocument<256> doc; // ArduinoJson6 Static Json Buffer
-     char jbuffer[256];
+   StaticJsonDocument<256> doc; // ArduinoJson6 Static Json Buffer
+  char jbuffer[256];
   
-  if (!client.connected()) 
-  {
-    reconnect();
-  }
+  if (!client.connected())   {    reconnect();  }
   client.loop();
 
   /* timer fürs senden */
   unsigned long now = millis();
-  if (now - lastMsg > 300) 
-  {
-  lastMsg = now;
+  if (now - lastMsg > 1) 
+    {
+    lastMsg = now;
+    sensors.requestTemperatures(); 
 
-   sensors.requestTemperatures(); 
- 
-
-  /* topic warpkern senden */
+    /* topic warpkern senden */
     doc["cell01"] = Batt.cell[0]->getfResults();
     doc["cell02"] = Batt.cell[1]->getfResults();
     doc["cell03"] = Batt.cell[2]->getfResults();
@@ -183,13 +196,20 @@ void loop()
     doc["cell08"] = Batt.cell[7]->getfResults(); 
     doc["tempboden"] = sensors.getTempCByIndex(0);
     size_t bytes = serializeJson(doc, jbuffer);
-    client.publish("warpkern_spannung", jbuffer, bytes);
-  
- 
-  }
+    client.publish("warpkern_daten", jbuffer, bytes);
+    }
 
+    /* GPIOS setzen */
+     digitalWrite(BATTPROTECT_LOAD, Batt.StateDischarge);
+     digitalWrite(BATTPROTECT_CHARGE, Batt.StateCharge);
+     digitalWrite(HEATER, Batt.StateHeater);
+     digitalWrite(SELBSTHALTUNG, Batt.StateESP);
 
-
+     /* GPIOS lesen */
+     if (!digitalRead(DISCONNECT)) //invertiert
+     {
+          Serial.println("disconnect");
+     }
 }
 
 

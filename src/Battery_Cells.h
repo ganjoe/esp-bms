@@ -23,7 +23,9 @@ enum WARPKERN
     QUELLFREIGABE_AUS,
     QUELLFREIGABE_EIN, 
     HEISZAUTOMATIK_EIN,
-    HEIZAUTOMATIK_AUS
+    HEIZAUTOMATIK_AUS,
+    SELBSTHALTUNG_EIN,
+    SELBSTHALTUNG_AUS
     };
 
 enum TANKS
@@ -68,6 +70,7 @@ public:
     bool StateCharge;
     bool StateDischarge;
     bool StateHeater;
+    bool StateESP;
 
     classCell *cell[BATTERY_CELLCNT];
 
