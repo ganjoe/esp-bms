@@ -66,19 +66,35 @@ public:
 class classBattery
 {
 private:
-        
+    float cellvoltage[BATTERY_CELLCNT];   
 public:
     bool StateCharge;
     bool StateDischarge;
     bool StateHeater;
     bool StateESP;
 
+    void setup();
+    classBattery();
+    float getCellVoltage(int cellnumber);
     classCell *cell[BATTERY_CELLCNT];
     Battery_heater *Heater;
+    void update();
 
 };
 
+extern ADS1115 ADS0;      //addr -> vcc
+extern ADS1115 ADS1;      //addr -> gnd
 
+/* User-Klassen für jeden Messkanal initalisieren */
+extern classCell cell01;
+extern classCell cell02;
+extern classCell cell03;
+extern classCell cell04;
+
+extern classCell cell05;
+extern classCell cell06;
+extern classCell cell07;
+extern classCell cell08;
 
 
 #endif
