@@ -30,7 +30,9 @@ double classCell::getfResults()
 
 classBattery::classBattery()
 {
-
+    sensors.begin(); // one wire tempsensor
+     ADS0.begin();
+     ADS1.begin();
 }
 
 void classBattery::setup()
@@ -55,6 +57,9 @@ void classBattery::update()
     
     
 }
+
+classBattery Batt;
+
 /* Treiber-Klassen für beide ADS1115 initalisieren */
 ADS1115 ADS0(0x48);      //addr -> vcc
 ADS1115 ADS1(0x49);      //addr -> gnd

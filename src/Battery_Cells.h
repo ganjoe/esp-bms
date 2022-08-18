@@ -17,17 +17,7 @@ enum TOPICS
     };
 
 
-enum WARPKERN
-    {
-    LASTFREIGABE_AUS,   
-    LASTFREIGABE_EIN,
-    QUELLFREIGABE_AUS,
-    QUELLFREIGABE_EIN, 
-    HEISZAUTOMATIK_EIN,
-    HEIZAUTOMATIK_AUS,
-    SELBSTHALTUNG_EIN,
-    SELBSTHALTUNG_AUS
-    };
+
 
 enum TANKS
     {
@@ -81,6 +71,8 @@ public:
     void update();
 
 };
+
+extern classBattery Batt;
 
 extern ADS1115 ADS0;      //addr -> vcc
 extern ADS1115 ADS1;      //addr -> gnd
